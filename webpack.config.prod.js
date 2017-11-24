@@ -6,6 +6,7 @@ const ExtractTextPlugin  =require('extract-text-webpack-plugin');
 const shell =require('shelljs');
 const fs =require('fs-extra');
 const removeAssetsPath =path.join(path.resolve(__dirname,'./dist'),'static');
+const CompressionWebpackPlugin=require('compression-webpack-plugin');
 shell.rm('-rf',removeAssetsPath);
 shell.mkdir('-p',removeAssetsPath);
 shell.config.silent=true;
@@ -22,7 +23,7 @@ module.exports={
 		path:path.resolve(__dirname,'dist'),
 		publicPath:'/',
 		filename:'static/js/[name].[hash:8].js',
-		chunkFilename:'static/js[name].[hash:8].chunk.js'
+		chunkFilename:'static/js/[name].[hash:8].chunk.js'
 	},
 	resolve:{
 		extensions:['.js','.json']
@@ -33,7 +34,7 @@ module.exports={
 			{
 				test:/\.js[x]?$/,
 				exclude: /node_modules/,
-				loader:'babel-loader?presets[]=es2015&presets[]=react'
+				loader:'babel-loader'
 			},
 			{
 				test:/\.(scss|css)$/,
@@ -107,6 +108,13 @@ module.exports={
 		        warnings: false
 		     },    
 			minimize:true
+		}),
+		new CompressionWebpackPlugin({
+			asset:'[path].gz[query]',
+			algorithm:'gzip',
+			test:new RegExp('\\.(js|css)$'),
+			threshold:10240,
+			minRatio:0.8
 		})
 	]
 }
